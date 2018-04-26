@@ -74,6 +74,8 @@ class Survey(object):
         """
         Add filtering conditions for the screener questions.
 
+        # TODO: replace with a more robust condition system
+
         :param conditions: List of conditions expressed in string form. Should be
                            expressed as follows: 'Login != None'
 
@@ -92,8 +94,8 @@ class Survey(object):
         }
 
         for cond in conditions:
-            if not any(f in cond for f in self.cond_mapping):
-                raise ValueError('Operand in ' + cond + ' not permitted.')
+            if not any(f == cond['operator'] for f in self.cond_mapping):
+                raise ValueError(cond['operator'] + ' not permitted.')
 
         self.conditions = conditions
 
@@ -184,11 +186,14 @@ class Survey(object):
         if len(self.conditions) > 0:
             results = []
             for cond in self.conditions:
-                op = [x for x in self.cond_mapping if x in cond][0]
-                var = cond.split(' ' + op + ' ')
 
-                res = self.cond_mapping[op](valid_results, var[0], var[1])
-                results.append(res)
+                try:
+                    operator = self.cond_mapping[cond['operator']]
+                except IndexError as e:
+                    raise IndexError("Condition is not supported!", e)
+
+                result = operator(valid_results, cond['variable'], cond['value'])
+                results.append(result)
 
             self.filtered_mturk_resp = recurse(results)
 

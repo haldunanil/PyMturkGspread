@@ -183,6 +183,7 @@ class Survey(object):
             ]
         )
 
+        # if conditions provided, apply them
         if len(self.conditions) > 0:
             results = []
             for cond in self.conditions:
@@ -197,6 +198,7 @@ class Survey(object):
 
             self.filtered_mturk_resp = recurse(results)
 
+        # otherwise, just fetch all the valid results
         else:
             self.filtered_mturk_resp = valid_results.copy()
 
@@ -217,7 +219,7 @@ class Survey(object):
         """
         Return all the users that have completed the screener questions.
 
-        Filters to users who have provided the desired responses
+        Filter to users who have provided the desired responses
         """
         self.filter_mturk_results()
         return self.filteredUsers
@@ -227,10 +229,10 @@ class Survey(object):
         Send a reminder email to a user.
         Appends the WorkerID to the end of the email
 
-        Inputs:
-        - users = list of users to receive an email
-        - subj = the subject line of the email
-        - msg = the body of the message
+        :param users: list of users to receive an email
+        :param subj:  the subject line of the email
+        :param msg:   the body of the message
+        :return:      list of users and whether they were notified
         """
         result = []
         for user in users:
@@ -308,16 +310,15 @@ class Survey(object):
         """
         Award a bonus amount to users who completed part 2 of the Survey.
 
-        Input:
-        - amount = a dollar amount expressed as a float
+        :param amount:      a dollar amount expressed as a float
+        :param customList:  [optional] a custom list of Worker IDs to send bonuses to. Will
+                            override existing completed list and ONLY send to the
+                            custom IDs
+        :param debug:       [optional] if True, payment(s) not made, instead an informative print
+                            element that shows which user(s) get(s) how much bonus; also
+                            prints the budget required for the payments
 
-        Optional input:
-        - customList = a custom list of Worker IDs to send bonuses to. Will
-                       override existing completed list and ONLY send to the
-                       custom IDs
-        - debug = if True, payment(s) not made, instead an informative print
-                  element that shows which user(s) get(s) how much bonus; also
-                  prints the budget required for the payments
+        :return:            None
         """
         self.filter_mturk_results()
         self.get_results()

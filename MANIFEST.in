@@ -1,0 +1,3 @@
+include README.md
+recursive-include PyMturkGspread *.txt *.md
+recursive-include docs *.md
